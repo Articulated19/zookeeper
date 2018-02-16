@@ -18,6 +18,7 @@ public class main {
 
         client.start();
 
+
         String lockPath = "/_locknode_";
 
         int maxWait = 9999;
@@ -26,8 +27,11 @@ public class main {
         try {
             if (lock.acquire(maxWait, TimeUnit.SECONDS)) {
                 try {
-                    System.out.println("Doing work");
-                    sleep(5000);
+                    System.out.println("lock_accepted");
+
+                    // waiting for input before releasing lock
+                    int i = System.in.read();
+                    System.out.println(i);
                 } finally {
                     lock.release();
                 }
@@ -36,6 +40,5 @@ public class main {
             System.out.println("Could not acquire lock");
             System.out.println(e.getMessage());
         }
-
     }
 }
