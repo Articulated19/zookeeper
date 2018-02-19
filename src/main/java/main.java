@@ -13,11 +13,19 @@ public class main {
     public static void main(String args[]) {
 
         RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);
-        String zookeeperConnectionString = "localhost:2181";
+
+        String hostInput = null;
+
+        if (args.length > 0) {
+            hostInput = args[0];
+        }
+
+        System.out.println(hostInput);
+
+        String zookeeperConnectionString = hostInput != null ? hostInput : "localhost:2181";
         CuratorFramework client = CuratorFrameworkFactory.newClient(zookeeperConnectionString, retryPolicy);
 
         client.start();
-
 
         String lockPath = "/_locknode_";
 
