@@ -15,6 +15,7 @@ public class main {
         RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);
 
         String hostInput = null;
+        String node = null;
 
         if (args.length > 0) {
             hostInput = args[0];
@@ -26,8 +27,13 @@ public class main {
         CuratorFramework client = CuratorFrameworkFactory.newClient(zookeeperConnectionString, retryPolicy);
 
         client.start();
+        
+        //Throw exception here maybe? If there is no argument[1] the node will be named "null"
+        if (args.length > 1) {
+            node = args[1];
+        }
 
-        String lockPath = "/_locknode_";
+        String lockPath = "/" + node;
 
         int maxWait = 9999;
 
