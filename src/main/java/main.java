@@ -2,7 +2,10 @@ import com.sun.mail.iap.ByteArray;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.framework.listen.Listenable;
 import org.apache.curator.framework.recipes.locks.InterProcessMutex;
+import org.apache.curator.framework.state.ConnectionState;
+import org.apache.curator.framework.state.ConnectionStateListener;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 
 import java.util.concurrent.TimeUnit;
@@ -28,12 +31,26 @@ public class main {
             hostInput = args[0];
         }
 
-        System.out.println(hostInput);
-
         String zookeeperConnectionString = hostInput != null ? hostInput : "localhost:2181";
         CuratorFramework client = CuratorFrameworkFactory.newClient(zookeeperConnectionString, retryPolicy);
 
         client.start();
+
+        /* --------------------------------
+         * Listen for connection changes
+         * -------------------------------- **/
+        Listenable<ConnectionStateListener> csl = client.getConnectionStateListenable();
+        csl.addListener(new ConnectionStateListener() {
+            @Override
+            public void stateChanged(CuratorFramework client, ConnectionState newState) {
+                System.out.println("Connection state: ");
+                if (newState.isConnected()) {
+                    System.out.println("zk_connection_successful");
+                } else {
+                    System.out.println("zk_connection_failed");
+                }
+            }
+        });
         
         //Throw exception here maybe? If there is no argument[1] the node will be named "null"
         if (args.length > 1) {
