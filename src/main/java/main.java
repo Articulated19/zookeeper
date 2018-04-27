@@ -1,4 +1,3 @@
-import com.sun.mail.iap.ByteArray;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -12,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static java.lang.Thread.sleep;
 
 public class main {
 	private static int maxWait = 9999;
@@ -85,7 +83,7 @@ public class main {
 			list_of_locks.add(k1 = new InterProcessMutex(client, lockPath + "/k1"));
 			list_of_locks.add(k2 = new InterProcessMutex(client, lockPath + "/k2"));
 		}else if (sections_needed == 1) {
-			list_of_locks.add(k1 = new InterProcessMutex(client, lockPath));
+			list_of_locks.add(k1 = new InterProcessMutex(client, lockPath + "/k1"));
 		}
 		
 		try {
@@ -98,6 +96,7 @@ public class main {
 				for(InterProcessMutex lock : list_of_locks) {
 					lock.release();
 				}
+				list_of_locks = null;
 			}
 
 		} catch (Exception e) {
